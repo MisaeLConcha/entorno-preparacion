@@ -12,8 +12,8 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
-  microservicio-pagos:
-    image: misconcha/microservicio-preparacion:v1-conchah
+  microservicio-preparacion:
+    image: misconcha/microservicio-preparacion:v3-conchah
     container_name: api_preparacion
     restart: always
     ports:

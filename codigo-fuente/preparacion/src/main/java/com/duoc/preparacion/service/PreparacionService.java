@@ -9,6 +9,9 @@ import com.duoc.preparacion.repository.PreparacionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class PreparacionService {
 
@@ -21,17 +24,28 @@ public class PreparacionService {
     @Autowired
     private NotificacionClient notificacionClient;
 
+    private static final Logger log =
+        LoggerFactory.getLogger(
+                 PreparacionService.class);
+
     // CREAR
     public PreparacionDTO crearPreparacion(
         PreparacionCreateDTO dto) {
+        log.info(
+            "Iniciando creacion de preparacion para orden {}",
+            dto.getIdOrden());
 
+        try {
         // GET a subpedido
             SubpedidoDTO subpedido =
                 subpedidoClient.getSubpedidoById(
                         dto.getIdOrden());
 
-        if (subpedido == null) {
-            throw new RuntimeException(
+            if (subpedido == null) {
+                log.warn(
+                    "No se encontro subpedido para la orden {}",
+                    dto.getIdOrden());
+                throw new RuntimeException(
                     "Subpedido no encontrado");
         }
 
@@ -50,6 +64,10 @@ public class PreparacionService {
         Preparacion guardado =
                 repository.save(preparacion);
 
+        log.info(
+                "Preparacion {} creada correctamente",
+                guardado.getId());
+
         // POST notificacion
         NotificacionDTO noti =
                 new NotificacionDTO();
@@ -63,11 +81,15 @@ public class PreparacionService {
         try {
             notificacionClient
                     .crearNotificacion(noti);
+            log.info(
+                    "Notificacion enviada para orden {}",
+                    dto.getIdOrden());
 
         } catch (Exception e) {
-
-            System.out.println(
-                    "No se pudo enviar notificacion");
+                        log.error(
+                    "No se pudo enviar notificación para orden {}",
+                    dto.getIdOrden(),
+                    e);
         }
 
         // retornar DTO
@@ -77,17 +99,27 @@ public class PreparacionService {
                 guardado.getTiempoEstimado(),
                 guardado.getIdOrden()
         );
+        
+    } catch (Exception e) {
+        log.error(
+                "Error al crear preparación para orden {}",dto.getIdOrden(),e);
+
+        throw e;
+    }
     }
 
     // GET POR ID
     public PreparacionDTO obtenerPorId(Long id) {
+        log.info(
+            "Buscando preparación con id {}",id);
 
         Preparacion p =
                 repository.findById(id)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Preparacion no encontrada"));
-
+                        .orElseThrow(() -> {
+                                log.warn("Preparación {} no encontrada",id);
+                                return new RuntimeException(
+                                        "Preparacion no encontrada");
+                        });
         return new PreparacionDTO(
                 p.getId(),
                 p.getEstado(),
@@ -100,16 +132,21 @@ public class PreparacionService {
     public PreparacionDTO actualizarEstado(
             Long id,
             String estado) {
+        log.info(
+            "Actualizando preparación {} al estado {}",id,estado);
         Preparacion p =
                 repository.findById(id)
-                        .orElseThrow(() ->
-                                new RuntimeException(
-                                        "Preparacion no encontrada"));
+                        .orElseThrow(() -> {
+                                log.warn("Preparacion {} no encontrada",id);
+                                return new RuntimeException(
+                                        "Preparacion no encontrada");
+                        });
 
         p.setEstado(estado);
 
         Preparacion actualizado =
                 repository.save(p);
+        log.info("Preparación {} actualizada correctamente",id);
         return new PreparacionDTO(
                 actualizado.getId(),
                 actualizado.getEstado(),
@@ -120,6 +157,19 @@ public class PreparacionService {
 
     // DELETE
     public void eliminar(Long id) {
-        repository.deleteById(id);
+        log.info(
+            "Eliminando preparación {}",id);
+
+    if (!repository.existsById(id)) {
+        log.warn(
+                "Se intentó eliminar preparación inexistente {}",id);
+
+        throw new RuntimeException(
+                "Preparacion no encontrada");
+    }
+
+    repository.deleteById(id);
+    log.info(
+            "Preparación {} eliminada correctamente",id);
     }
 }

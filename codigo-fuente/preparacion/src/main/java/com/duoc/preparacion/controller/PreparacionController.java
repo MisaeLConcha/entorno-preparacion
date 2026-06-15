@@ -26,7 +26,10 @@ public class PreparacionController {
     private PreparacionService service;
 
     //crear
-    @Operation(summary = "Registrar nueva Preparacion")
+    @Operation(
+        summary = "Registrar nueva Preparacion",
+        description = "Registra una nueva preparacion asociada a una orden"
+    )
     @ApiResponse(responseCode = "201", description = "Preparacion creada exitosamente")
     @PostMapping
     public ResponseEntity<PreparacionDTO>
@@ -41,7 +44,10 @@ public class PreparacionController {
     }
 
     //GET x id
-    @Operation(summary = "Buscar Preparacion por ID")
+    @Operation(
+        summary = "Buscar Preparacion por ID",
+        description = "Obtiene la preparacion requerida de acuerdo al id ingresado previamente generado"
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Preparacion encontrada"),
         @ApiResponse(responseCode = "404", description = "Preparacion no encontrada")
@@ -57,7 +63,10 @@ public class PreparacionController {
     }
 
     //actualizar
-    @Operation(summary = "Actualizar Preparacion existente del estado")
+    @Operation(
+        summary = "Actualizar Preparacion existente del estado",
+        description = "Modifica el estado de la preparacion que se desee por medio el id de esta, mas el estado en la irl"
+    )
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Actualización exitosa"),
         @ApiResponse(responseCode = "404", description = "Preparacion no encontrada")
@@ -74,7 +83,9 @@ public class PreparacionController {
     }
 
     //delete
-    @Operation(summary = "Eliminar Preparacion")
+    @Operation(
+        summary = "Eliminar Preparacion",
+        description = "Elimina la preparacion actual mediante el id de la misma")
     @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Eliminación exitosa"),
         @ApiResponse(responseCode = "404", description = "Preparacion no encontrada")
