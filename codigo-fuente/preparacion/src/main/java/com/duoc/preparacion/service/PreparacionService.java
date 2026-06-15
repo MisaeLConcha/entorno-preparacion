@@ -3,6 +3,8 @@ package com.duoc.preparacion.service;
 import com.duoc.preparacion.client.NotificacionClient;
 import com.duoc.preparacion.client.SubpedidoClient;
 import com.duoc.preparacion.dto.*;
+import com.duoc.preparacion.exception.BadRequestException;
+import com.duoc.preparacion.exception.ResourceNotFoundException;
 import com.duoc.preparacion.model.Preparacion;
 import com.duoc.preparacion.repository.PreparacionRepository;
 
@@ -34,6 +36,13 @@ public class PreparacionService {
         log.info(
             "Iniciando creacion de preparacion para orden {}",
             dto.getIdOrden());
+        //para contadores sobre 0
+        if (dto.getTiempoEstimado() <= 0) {
+        log.warn(
+                "Tiempo estimado invalido: {}",dto.getTiempoEstimado());
+        throw new BadRequestException(
+                "El tiempo estimado debe ser mayor a 0");
+    }
 
         try {
         // GET a subpedido
@@ -45,7 +54,7 @@ public class PreparacionService {
                 log.warn(
                     "No se encontro subpedido para la orden {}",
                     dto.getIdOrden());
-                throw new RuntimeException(
+                throw new ResourceNotFoundException(
                     "Subpedido no encontrado");
         }
 
@@ -117,7 +126,7 @@ public class PreparacionService {
                 repository.findById(id)
                         .orElseThrow(() -> {
                                 log.warn("Preparación {} no encontrada",id);
-                                return new RuntimeException(
+                                return new ResourceNotFoundException(
                                         "Preparacion no encontrada");
                         });
         return new PreparacionDTO(
@@ -138,7 +147,7 @@ public class PreparacionService {
                 repository.findById(id)
                         .orElseThrow(() -> {
                                 log.warn("Preparacion {} no encontrada",id);
-                                return new RuntimeException(
+                                return new ResourceNotFoundException(
                                         "Preparacion no encontrada");
                         });
 
@@ -155,7 +164,7 @@ public class PreparacionService {
         );
     }
 
-    // DELETE
+    // eliminar
     public void eliminar(Long id) {
         log.info(
             "Eliminando preparación {}",id);
@@ -164,7 +173,7 @@ public class PreparacionService {
         log.warn(
                 "Se intentó eliminar preparación inexistente {}",id);
 
-        throw new RuntimeException(
+        throw new ResourceNotFoundException(
                 "Preparacion no encontrada");
     }
 
