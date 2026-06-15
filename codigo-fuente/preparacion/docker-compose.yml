@@ -13,7 +13,7 @@ services:
       - mysql_data:/var/lib/mysql
 
   microservicio-preparacion:
-    image: misconcha/microservicio-preparacion:v3-conchah
+    image: misconcha/microservicio-preparacion:v5-conchah
     container_name: api_preparacion
     restart: always
     ports:

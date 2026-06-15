@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.*;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import java.time.LocalDateTime;
 
@@ -95,4 +96,23 @@ public class GlobalExceptionHandler {
                         HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(error);
     }
+
+    @ExceptionHandler(
+    HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse>
+    manejarMetodoNoPermitido(
+        HttpRequestMethodNotSupportedException ex,
+        HttpServletRequest request) {
+
+    ErrorResponse error =
+            new ErrorResponse(
+                    LocalDateTime.now(),
+                    HttpStatus.METHOD_NOT_ALLOWED.value(),
+                    "Method Not Allowed",
+                    ex.getMessage(),
+                    request.getRequestURI());
+    return ResponseEntity
+            .status(HttpStatus.METHOD_NOT_ALLOWED)
+            .body(error);
+        }
 }

@@ -5,6 +5,8 @@ import com.duoc.preparacion.service.PreparacionService;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +43,16 @@ public class PreparacionController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(service.crearPreparacion(dto));
+    }
+
+    @Operation(summary = "Listar todas las Preparaciones",
+               description = "Retorna la lista completa de Preparaciones registradas en el sistema.")
+    @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente")
+    @GetMapping
+    public ResponseEntity<List<PreparacionDTO>>
+    obtenerTodas() {
+        return ResponseEntity.ok(
+            service.obtenerTodas());
     }
 
     //GET x id

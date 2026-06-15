@@ -11,6 +11,8 @@ import com.duoc.preparacion.repository.PreparacionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -162,6 +164,23 @@ public class PreparacionService {
                 actualizado.getTiempoEstimado(),
                 actualizado.getIdOrden()
         );
+    }
+
+    public List<PreparacionDTO> obtenerTodas() {
+        log.info("Obteniendo todas las preparaciones");
+        List<PreparacionDTO> preparaciones =
+            repository.findAll()
+                .stream()
+                .map(p -> new PreparacionDTO(
+                        p.getId(),
+                        p.getEstado(),
+                        p.getTiempoEstimado(),
+                        p.getIdOrden()))
+                    .toList();
+    log.info(
+            "Se encontraron {} preparaciones",
+            preparaciones.size());
+    return preparaciones;
     }
 
     // eliminar
